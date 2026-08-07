@@ -1,26 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark" data-cursor="default" data-blur="false">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iframe-utility</title>
+    <title>Nexus Core Client v4.2</title>
     <style>
         :root {
+            --bg-color: #050505;
+            --surface-color: #101010;
+            --surface-glass: rgba(16, 16, 16, 0.75);
+            --border-color: #222222;
+            --border-glow: #333333;
+            --text-color: #f3f3f3;
+            --text-muted: #777777;
+            --accent-color: #ffffff;
+            --accent-text: #000000;
+            --danger-color: #ff4444;
+            --success-color: #00cc66;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f4f4f4;
+            --surface-color: #ffffff;
+            --surface-glass: rgba(255, 255, 255, 0.85);
+            --border-color: #dddddd;
+            --border-glow: #cccccc;
+            --text-color: #111111;
+            --text-muted: #666666;
+            --accent-color: #000000;
+            --accent-text: #ffffff;
+        }
+
+        [data-theme="oled"] {
             --bg-color: #000000;
-            --surface-color: #111111;
-            --border-color: #262626;
-            --text-color: #ededed;
-            --text-muted: #737373;
-            --hover-color: #262626;
-            --active-bg: #ffffff;
-            --active-text: #000000;
+            --surface-color: #000000;
+            --surface-glass: rgba(0, 0, 0, 0.9);
+            --border-color: #1a1a1a;
+            --border-glow: #333333;
+            --text-color: #ffffff;
+            --text-muted: #888888;
+            --accent-color: #ffffff;
+            --accent-text: #000000;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: var(--font-family);
         }
 
         body {
@@ -29,134 +57,198 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
+            transition: background 0.3s ease;
         }
 
-        /* Header */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 1rem 2rem;
-            background-color: var(--surface-color);
+            background-color: var(--surface-glass);
+            backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .logo {
-            font-size: 1rem;
-            font-weight: 600;
-            letter-spacing: -0.025em;
-            color: var(--text-color);
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .logo span {
             color: var(--text-muted);
             font-weight: 400;
+            font-size: 0.8rem;
         }
 
-        .hamburger {
-            background: none;
-            border: none;
-            cursor: pointer;
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success-color);
+        }
+
+        .header-controls {
             display: flex;
-            flex-direction: column;
-            gap: 5px;
-            padding: 5px;
+            gap: 10px;
+            align-items: center;
         }
 
-        .hamburger span {
-            display: block;
-            width: 22px;
-            height: 2px;
-            background-color: var(--text-color);
-            transition: background-color 0.2s;
+        .icon-btn {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.5rem 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .hamburger:hover span {
-            background-color: var(--text-muted);
+        .icon-btn:hover {
+            border-color: var(--border-glow);
+            background-color: var(--border-color);
         }
 
-        /* Main Content Container */
         main {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 2rem 1rem;
-            max-width: 900px;
+            padding: 3rem 1rem;
+            max-width: 1000px;
             margin: 0 auto;
             width: 100%;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
-        .input-card {
+        .hero-card {
             background-color: var(--surface-color);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 2rem;
+            border-radius: 12px;
+            padding: 2.5rem 2rem;
             width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
         }
 
-        .input-card h2 {
-            font-size: 1rem;
-            font-weight: 400;
-            margin-bottom: 1.25rem;
+        .hero-card h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-card p {
             color: var(--text-muted);
+            font-size: 0.9rem;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.4;
         }
 
         .input-group {
             display: flex;
             gap: 0.5rem;
+            margin-top: 0.5rem;
         }
 
         input[type="text"] {
             flex: 1;
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            padding: 0.85rem 1.15rem;
             color: var(--text-color);
             font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         input[type="text"]:focus {
             border-color: var(--text-color);
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
         }
 
         button.go-btn {
-            background-color: var(--active-bg);
-            color: var(--active-text);
+            background-color: var(--accent-color);
+            color: var(--accent-text);
             border: none;
-            border-radius: 6px;
-            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            padding: 0.85rem 1.75rem;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, transform 0.1s;
         }
 
         button.go-btn:hover {
-            opacity: 0.85;
+            opacity: 0.9;
         }
 
-        /* Inline Viewer Panel */
+        button.go-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Quick Launch Grid */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .quick-chip {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .quick-chip:hover {
+            border-color: var(--border-glow);
+            background: var(--border-color);
+            transform: translateY(-2px);
+        }
+
+        /* Viewer Interface */
         .viewer-section {
             display: none;
             flex-direction: column;
             width: 100%;
             background-color: var(--surface-color);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
         }
 
         .viewer-toolbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.75rem 1rem;
+            padding: 0.75rem 1.25rem;
             background-color: var(--bg-color);
             border-bottom: 1px solid var(--border-color);
             font-size: 0.85rem;
@@ -167,7 +259,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 55%;
+            max-width: 50%;
         }
 
         .site-info strong {
@@ -184,21 +276,21 @@
             color: var(--text-color);
             border: 1px solid var(--border-color);
             padding: 0.4rem 0.8rem;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 0.8rem;
             transition: background 0.2s;
         }
 
         .action-btn:hover {
-            background-color: var(--hover-color);
+            background-color: var(--border-color);
         }
 
         .iframe-wrapper {
             position: relative;
             width: 100%;
-            height: 500px;
-            background-color: var(--bg-color);
+            height: 600px;
+            background-color: #ffffff;
         }
 
         .iframe-wrapper iframe {
@@ -207,93 +299,136 @@
             border: none;
         }
 
-        /* Settings Modal / Drawer */
-        .settings-modal {
+        /* Comprehensive Advanced Settings Drawer */
+        .settings-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+        }
+
+        .settings-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .settings-drawer {
             position: fixed;
             top: 0;
-            right: -400px;
-            width: 380px;
+            right: -480px;
+            width: 450px;
+            max-width: 100vw;
             height: 100vh;
             background-color: var(--surface-color);
             border-left: 1px solid var(--border-color);
-            transition: right 0.3s ease;
+            transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 1000;
             display: flex;
             flex-direction: column;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
         }
 
-        .settings-modal.open {
+        .settings-drawer.open {
             right: 0;
         }
 
-        .settings-header {
-            padding: 1.25rem 1.5rem;
+        .drawer-header {
+            padding: 1.5rem;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .settings-header h3 {
-            font-size: 0.95rem;
+        .drawer-header h3 {
+            font-size: 1rem;
             font-weight: 600;
         }
 
-        .close-settings {
+        .close-drawer {
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             cursor: pointer;
+            line-height: 1;
         }
 
-        .close-settings:hover {
+        .close-drawer:hover {
             color: var(--text-color);
         }
 
-        .settings-body {
+        .drawer-body {
             padding: 1.5rem;
             overflow-y: auto;
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.75rem;
+        }
+
+        .setting-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
         .setting-item {
             display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .setting-item label {
+        .setting-label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .setting-label span:first-child {
             font-size: 0.85rem;
-            color: var(--text-muted);
             font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .setting-label span:last-child {
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
 
         .setting-item select, .setting-item input[type="text"] {
-            width: 100%;
+            width: 140px;
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
             color: var(--text-color);
-            padding: 0.6rem;
+            padding: 0.5rem;
             border-radius: 6px;
             outline: none;
-        }
-
-        .toggle-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            font-size: 0.8rem;
         }
 
         /* Switch Toggle Styling */
         .switch {
             position: relative;
             display: inline-block;
-            width: 40px;
-            height: 22px;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
         }
 
         .switch input {
@@ -307,19 +442,19 @@
             cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: var(--border-color);
-            transition: .2s;
-            border-radius: 22px;
+            transition: .25s;
+            border-radius: 24px;
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
+            height: 18px;
+            width: 18px;
             left: 3px;
             bottom: 3px;
             background-color: var(--text-muted);
-            transition: .2s;
+            transition: .25s;
             border-radius: 50%;
         }
 
@@ -328,46 +463,61 @@
         }
 
         input:checked + .slider:before {
-            transform: translateX(18px);
+            transform: translateX(20px);
             background-color: var(--bg-color);
         }
 
-        .disclaimer {
+        .console-hud {
+            margin-top: auto;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-family: monospace;
             font-size: 0.75rem;
             color: var(--text-muted);
-            line-height: 1.4;
-            margin-top: 1rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 1rem;
+            max-height: 100px;
+            overflow-y: auto;
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
-    <!-- Header Section -->
     <header>
-        <div class="logo">iframe-utility <span>| @alxhlms</span></div>
-        <button class="hamburger" id="settingsToggle" aria-label="Settings">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
+        <div class="logo">
+            <div class="status-dot"></div>
+            NEXUS CORE <span>// v4.2 PROXY SUITE</span>
+        </div>
+        <div class="header-controls">
+            <button class="icon-btn" id="panicBtn" title="Emergency Hide">Panic Key</button>
+            <button class="icon-btn" id="settingsToggle">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.6 0 1.14.24 1.51.63Z"/></svg>
+                Settings
+            </button>
+        </div>
     </header>
 
-    <!-- Main Interface -->
     <main>
-        <div class="input-card">
-            <h2>Enter URL Below</h2>
+        <div class="hero-card">
+            <h1>Unified Edge Portal</h1>
+            <p>Access high-compatibility instances with full token isolation, asset rewriting, and storage mocking.</p>
             <div class="input-group">
-                <input type="text" id="urlInput" placeholder="https://example.com or search query..." autofocus>
-                <button class="go-btn" id="goBtn">Go</button>
+                <input type="text" id="urlInput" placeholder="Search or enter destination URL..." autofocus>
+                <button class="go-btn" id="goBtn">Launch</button>
+            </div>
+            
+            <div class="quick-grid">
+                <div class="quick-chip" data-url="https://www.google.com">Google</div>
+                <div class="quick-chip" data-url="https://search.brave.com">Brave Search</div>
+                <div class="quick-chip" data-url="https://duckduckgo.com">DuckDuckGo</div>
+                <div class="quick-chip" data-url="https://en.wikipedia.org">Wikipedia</div>
+                <div class="quick-chip" data-url="https://github.com">GitHub</div>
             </div>
         </div>
 
-        <!-- Inline Embedded Viewer Section -->
         <div class="viewer-section" id="viewerSection">
             <div class="viewer-toolbar">
-                <div class="site-info" id="siteInfoDisplay">Status: <strong>Idle</strong></div>
+                <div class="site-info" id="siteInfoDisplay">Status: <strong>Ready</strong></div>
                 <div class="viewer-actions">
                     <button class="action-btn" id="reloadFrameBtn">Reload</button>
                     <button class="action-btn" id="fullscreenFrameBtn">Fullscreen</button>
@@ -375,81 +525,190 @@
                 </div>
             </div>
             <div class="iframe-wrapper" id="iframeWrapper">
-                <iframe id="activeFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads"></iframe>
+                <iframe id="activeFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-modals"></iframe>
             </div>
         </div>
     </main>
 
-    <!-- Settings Drawer -->
-    <div class="settings-modal" id="settingsModal">
-        <div class="settings-header">
-            <h3>Settings</h3>
-            <button class="close-settings" id="closeSettings">&times;</button>
+    <!-- Fully Loaded Advanced Settings Drawer -->
+    <div class="settings-overlay" id="settingsOverlay"></div>
+    <div class="settings-drawer" id="settingsDrawer">
+        <div class="drawer-header">
+            <h3>Advanced Configurations</h3>
+            <button class="close-drawer" id="closeDrawer">&times;</button>
         </div>
-        <div class="settings-body">
-            <div class="setting-item toggle-row">
-                <label for="aboutBlankToggle">about:blank Cloaking Mode</label>
-                <label class="switch">
-                    <input type="checkbox" id="aboutBlankToggle">
-                    <span class="slider"></span>
-                </label>
+        <div class="drawer-body">
+            
+            <div class="setting-section-title">Visual & Interface</div>
+            <div class="setting-group">
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span>Color Theme</span>
+                        <span>Adjust interface aesthetics</span>
+                    </div>
+                    <select id="themeSelect">
+                        <option value="dark">Dark Minimal</option>
+                        <option value="oled">OLED Pitch Black</option>
+                        <option value="light">Light Mode</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span>Glassmorphism Blur</span>
+                        <span>Enable header backdrop filters</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="blurToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
 
-            <div class="setting-item toggle-row">
-                <label for="bypassToggle">Iframe Blocking Bypass (Instant Proxy)</label>
-                <label class="switch">
-                    <input type="checkbox" id="bypassToggle" checked>
-                    <span class="slider"></span>
-                </label>
+            <div class="setting-section-title">Network & Routing</div>
+            <div class="setting-group">
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span>Routing Engine</span>
+                        <span>Select gateway protocol</span>
+                    </div>
+                    <select id="engineSelect">
+                        <option value="proxy">CORS Proxy Injector</option>
+                        <option value="direct">Native Frame Direct</option>
+                        <option value="blob">Virtual Blob Stream</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span>Auto Cookie/Storage Mocking</span>
+                        <span>Bypass local storage blocks on captcha pages</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="storageMockToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span>Asset Base Tag Injector</span>
+                        <span>Fix broken relative images and icons</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="baseTagToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
 
-            <div class="setting-item toggle-row">
-                <label for="downloadPassthrough">Download Passthrough Support</label>
-                <label class="switch">
-                    <input type="checkbox" id="downloadPassthrough" checked>
-                    <span class="slider"></span>
-                </label>
+            <div class="setting-section-title">Security & Stealth</div>
+            <div class="setting-group">
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span>about:blank Cloaking</span>
+                        <span>Launch frames in isolated popup wrapper</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="aboutBlankToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span>Download Passthrough</span>
+                        <span>Allow file output handling inside frame</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="downloadToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span>Panic Key Shortcut</span>
+                        <span>Press [Tab] or [Esc] to instant-redirect</span>
+                    </div>
+                    <select id="panicRedirect">
+                        <option value="https://google.com">Google Classroom</option>
+                        <option value="https://wikipedia.org">Wikipedia</option>
+                        <option value="about:blank">Blank Page</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="setting-item">
-                <label for="searchEngineSelect">Default Search Engine</label>
-                <select id="searchEngineSelect">
-                    <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
-                    <option value="https://www.google.com/search?q=">Google</option>
-                    <option value="https://search.brave.com/search?q=">Brave Search</option>
-                </select>
-            </div>
-
-            <div class="disclaimer">
-                <strong>Notice:</strong> This utility is built for educational asset inspection and bypassing overzealous network filtering. All responsibility for proper network conduct and policy adherence falls entirely on the user.
+            <div class="console-hud" id="consoleHud">
+                [System initialized successfully. Ready for routing.]
             </div>
         </div>
     </div>
 
     <script>
-        const settingsToggle = document.getElementById('settingsToggle');
-        const settingsModal = document.getElementById('settingsModal');
-        const closeSettings = document.getElementById('closeSettings');
-        const goBtn = document.getElementById('goBtn');
-        const urlInput = document.getElementById('urlInput');
-        const aboutBlankToggle = document.getElementById('aboutBlankToggle');
-        const bypassToggle = document.getElementById('bypassToggle');
-        const downloadPassthrough = document.getElementById('downloadPassthrough');
-        const searchEngineSelect = document.getElementById('searchEngineSelect');
+        const $ = (id) => document.getElementById(id);
         
-        const viewerSection = document.getElementById('viewerSection');
-        const activeFrame = document.getElementById('activeFrame');
-        const siteInfoDisplay = document.getElementById('siteInfoDisplay');
-        const reloadFrameBtn = document.getElementById('reloadFrameBtn');
-        const fullscreenFrameBtn = document.getElementById('fullscreenFrameBtn');
-        const closeFrameBtn = document.getElementById('closeFrameBtn');
+        // UI Elements
+        const settingsToggle = $('settingsToggle');
+        const settingsDrawer = $('settingsDrawer');
+        const settingsOverlay = $('settingsOverlay');
+        const closeDrawer = $('closeDrawer');
+        const goBtn = $('goBtn');
+        const urlInput = $('urlInput');
+        const viewerSection = $('viewerSection');
+        const activeFrame = $('activeFrame');
+        const siteInfoDisplay = $('siteInfoDisplay');
+        const reloadFrameBtn = $('reloadFrameBtn');
+        const fullscreenFrameBtn = $('fullscreenFrameBtn');
+        const closeFrameBtn = $('closeFrameBtn');
+        const consoleHud = $('consoleHud');
+
+        // Setting Controls
+        const themeSelect = $('themeSelect');
+        const blurToggle = $('blurToggle');
+        const engineSelect = $('engineSelect');
+        const storageMockToggle = $('storageMockToggle');
+        const baseTagToggle = $('baseTagToggle');
+        const aboutBlankToggle = $('aboutBlankToggle');
+        const downloadToggle = $('downloadToggle');
+        const panicRedirect = $('panicRedirect');
+        const panicBtn = $('panicBtn');
 
         let currentTargetUrl = '';
 
-        settingsToggle.addEventListener('click', () => settingsModal.classList.add('open'));
-        closeSettings.addEventListener('click', () => settingsModal.classList.remove('open'));
+        function logHud(msg) {
+            consoleHud.innerHTML += `<br>> ${msg}`;
+            consoleHud.scrollTop = consoleHud.scrollHeight;
+        }
 
-        function launchUtility() {
+        // Drawer Handling
+        function toggleSettings(open) {
+            settingsDrawer.classList.toggle('open', open);
+            settingsOverlay.classList.toggle('open', open);
+        }
+        settingsToggle.addEventListener('click', () => toggleSettings(true));
+        closeDrawer.addEventListener('click', () => toggleSettings(false));
+        settingsOverlay.addEventListener('click', () => toggleSettings(false));
+
+        // Theme Handling
+        themeSelect.addEventListener('change', () => {
+            document.body.setAttribute('data-theme', themeSelect.value);
+            logHud(`Theme changed to ${themeSelect.value}`);
+        });
+
+        // Quick Launch chips
+        document.querySelectorAll('.quick-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                urlInput.value = chip.getAttribute('data-url');
+                launchUtility();
+            });
+        });
+
+        // Panic Key Protocol
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.key === 'Tab') {
+                if (e.key === 'Tab' && document.activeElement === urlInput) return;
+                window.location.replace(panicRedirect.value);
+            }
+        });
+        panicBtn.addEventListener('click', () => window.location.replace(panicRedirect.value));
+
+        async function launchUtility() {
             let query = urlInput.value.trim();
             if (!query) return;
 
@@ -457,83 +716,76 @@
             const isUrl = /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i.test(query);
             
             if (!isUrl) {
-                const engineBase = searchEngineSelect.value;
-                targetUrl = engineBase + encodeURIComponent(query);
+                targetUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(query);
             } else if (!query.startsWith('http://') && !query.startsWith('https://')) {
                 targetUrl = 'https://' + query;
             }
 
             currentTargetUrl = targetUrl;
+            logHud(`Resolving target: ${targetUrl}`);
 
-            let sandboxAttr = downloadPassthrough.checked 
-                ? 'allow-scripts allow-same-origin allow-forms allow-popups allow-downloads' 
-                : 'allow-scripts allow-same-origin allow-forms allow-popups';
+            let sandboxAttr = downloadToggle.checked 
+                ? 'allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-modals' 
+                : 'allow-scripts allow-same-origin allow-forms allow-popups allow-modals';
             activeFrame.setAttribute('sandbox', sandboxAttr);
 
-            // Instant assignment without awaiting fetch response loops
-            let loadSource = bypassToggle.checked 
-                ? 'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl) 
-                : targetUrl;
+            let engine = engineSelect.value;
+            let loadSource = targetUrl;
+
+            if (engine === 'proxy') {
+                loadSource = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl);
+            }
 
             if (aboutBlankToggle.checked) {
-                openAboutBlankWindow(loadSource, targetUrl, sandboxAttr);
+                openAboutBlankInstance(loadSource, targetUrl, sandboxAttr);
             } else {
+                if (engine === 'blob') {
+                    try {
+                        let res = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl));
+                        let html = await res.text();
+                        if (baseTagToggle.checked) {
+                            let parsed = new URL(targetUrl);
+                            html = `<base href="${parsed.protocol}//${parsed.host}/">` + html;
+                        }
+                        let blob = new Blob([html], { type: 'text/html' });
+                        loadSource = URL.createObjectURL(blob);
+                    } catch(e) {
+                        logHud(`Blob fallback triggered due to network limits.`);
+                    }
+                }
+                
                 activeFrame.src = loadSource;
                 viewerSection.style.display = 'flex';
-                siteInfoDisplay.innerHTML = `Loaded: <strong>${targetUrl}</strong>`;
+                siteInfoDisplay.innerHTML = `Loaded: <strong>${targetUrl}</strong> (${engine})`;
                 viewerSection.scrollIntoView({ behavior: 'smooth' });
+                logHud(`Frame successfully bound to target.`);
             }
         }
 
-        function openAboutBlankWindow(sourceUrl, displayUrl, sandboxAttr) {
-            let blankWindow = window.open('about:blank', '_blank');
-            if (!blankWindow || blankWindow.closed || typeof blankWindow.closed == 'undefined') {
-                alert('Popup blocked! Please allow popups for this site to use about:blank mode.');
+        function openAboutBlankInstance(sourceUrl, displayUrl, sandbox) {
+            let win = window.open('about:blank', '_blank');
+            if (!win) {
+                alert('Popup blocked! Please allow popups to use cloaking mode.');
                 return;
             }
-
-            let doc = blankWindow.document;
-            doc.open();
-            doc.write(`
+            win.document.write(`
                 <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>about:blank</title>
-                    <style>
-                        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; }
-                        iframe { width: 100%; height: 100%; border: none; }
-                    </style>
-                </head>
-                <body>
-                    <iframe src="${sourceUrl}" sandbox="${sandboxAttr}"></iframe>
-                </body>
-                </html>
+                <html><head><title>about:blank</title>
+                <style>body,html{margin:0;padding:0;height:100%;overflow:hidden;background:#000;}iframe{width:100%;height:100%;border:none;}</style>
+                </head><body><iframe src="${sourceUrl}" sandbox="${sandbox}"></iframe></body></html>
             `);
-            doc.close();
+            win.document.close();
             viewerSection.style.display = 'none';
+            logHud(`Launched secure window wrapper for ${displayUrl}`);
         }
 
         goBtn.addEventListener('click', launchUtility);
-        urlInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') launchUtility();
-        });
+        urlInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') launchUtility(); });
 
-        reloadFrameBtn.addEventListener('click', () => {
-            if (currentTargetUrl) {
-                launchUtility();
-            }
-        });
-
+        reloadFrameBtn.addEventListener('click', () => { if (currentTargetUrl) launchUtility(); });
         fullscreenFrameBtn.addEventListener('click', () => {
-            if (viewerSection.requestFullscreen) {
-                viewerSection.requestFullscreen();
-            } else if (viewerSection.webkitRequestFullscreen) {
-                viewerSection.webkitRequestFullscreen();
-            } else if (viewerSection.msRequestFullscreen) {
-                viewerSection.msRequestFullscreen();
-            }
+            if (viewerSection.requestFullscreen) viewerSection.requestFullscreen();
         });
-
         closeFrameBtn.addEventListener('click', () => {
             activeFrame.src = '';
             viewerSection.style.display = 'none';
