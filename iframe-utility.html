@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iframe-utility</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --surface-color: #111111;
+            --border-color: #262626;
+            --text-color: #ededed;
+            --text-muted: #737373;
+            --hover-color: #262626;
+            --active-bg: #ffffff;
+            --active-text: #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            color: var(--text-color);
+        }
+
+        .logo span {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 5px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background-color: var(--text-color);
+            transition: background-color 0.2s;
+        }
+
+        .hamburger:hover span {
+            background-color: var(--text-muted);
+        }
+
+        /* Main Content Container */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 1.5rem;
+        }
+
+        .input-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        .input-card h2 {
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 1.25rem;
+            color: var(--text-muted);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--text-color);
+        }
+
+        button.go-btn {
+            background-color: var(--active-bg);
+            color: var(--active-text);
+            border: none;
+            border-radius: 6px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button.go-btn:hover {
+            opacity: 0.85;
+        }
+
+        /* Inline Viewer Panel */
+        .viewer-section {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .viewer-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background-color: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        .site-info {
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 55%;
+        }
+
+        .site-info strong {
+            color: var(--text-color);
+        }
+
+        .viewer-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--hover-color);
+        }
+
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background-color: var(--bg-color);
+        }
+
+        .iframe-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Settings Modal / Drawer */
+        .settings-modal {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background-color: var(--surface-color);
+            border-left: 1px solid var(--border-color);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .settings-modal.open {
+            right: 0;
+        }
+
+        .settings-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-header h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .close-settings {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .close-settings:hover {
+            color: var(--text-color);
+        }
+
+        .settings-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .setting-item label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .setting-item select, .setting-item input[type="text"] {
+            width: 100%;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.6rem;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Switch Toggle Styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--border-color);
+            transition: .2s;
+            border-radius: 22px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-muted);
+            transition: .2s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--text-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(18px);
+            background-color: var(--bg-color);
+        }
+
+        .disclaimer {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="logo">iframe-utility <span>| @alxhlms</span></div>
+        <button class="hamburger" id="settingsToggle" aria-label="Settings">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </header>
+
+    <!-- Main Interface -->
+    <main>
+        <div class="input-card">
+            <h2>Enter URL Below</h2>
+            <div class="input-group">
+                <input type="text" id="urlInput" placeholder="https://example.com or search query..." autofocus>
+                <button class="go-btn" id="goBtn">Go</button>
+            </div>
+        </div>
+
+        <!-- Inline Embedded Viewer Section -->
+        <div class="viewer-section" id="viewerSection">
+            <div class="viewer-toolbar">
+                <div class="site-info" id="siteInfoDisplay">Status: <strong>Idle</strong></div>
+                <div class="viewer-actions">
+                    <button class="action-btn" id="reloadFrameBtn">Reload</button>
+                    <button class="action-btn" id="fullscreenFrameBtn">Fullscreen</button>
+                    <button class="action-btn" id="closeFrameBtn">Close</button>
+                </div>
+            </div>
+            <div class="iframe-wrapper" id="iframeWrapper">
+                <iframe id="activeFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads"></iframe>
+            </div>
+        </div>
+    </main>
+
+    <!-- Settings Drawer -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-header">
+            <h3>Settings</h3>
+            <button class="close-settings" id="closeSettings">&times;</button>
+        </div>
+        <div class="settings-body">
+            <div class="setting-item toggle-row">
+                <label for="aboutBlankToggle">about:blank Cloaking Mode</label>
+                <label class="switch">
+                    <input type="checkbox" id="aboutBlankToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-item toggle-row">
+                <label for="bypassToggle">Iframe Blocking Bypass (Instant Proxy)</label>
+                <label class="switch">
+                    <input type="checkbox" id="bypassToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-item toggle-row">
+                <label for="downloadPassthrough">Download Passthrough Support</label>
+                <label class="switch">
+                    <input type="checkbox" id="downloadPassthrough" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <label for="searchEngineSelect">Default Search Engine</label>
+                <select id="searchEngineSelect">
+                    <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
+                    <option value="https://www.google.com/search?q=">Google</option>
+                    <option value="https://search.brave.com/search?q=">Brave Search</option>
+                </select>
+            </div>
+
+            <div class="disclaimer">
+                <strong>Notice:</strong> This utility is built for educational asset inspection and bypassing overzealous network filtering. All responsibility for proper network conduct and policy adherence falls entirely on the user.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const settingsToggle = document.getElementById('settingsToggle');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettings = document.getElementById('closeSettings');
+        const goBtn = document.getElementById('goBtn');
+        const urlInput = document.getElementById('urlInput');
+        const aboutBlankToggle = document.getElementById('aboutBlankToggle');
+        const bypassToggle = document.getElementById('bypassToggle');
+        const downloadPassthrough = document.getElementById('downloadPassthrough');
+        const searchEngineSelect = document.getElementById('searchEngineSelect');
+        
+        const viewerSection = document.getElementById('viewerSection');
+        const activeFrame = document.getElementById('activeFrame');
+        const siteInfoDisplay = document.getElementById('siteInfoDisplay');
+        const reloadFrameBtn = document.getElementById('reloadFrameBtn');
+        const fullscreenFrameBtn = document.getElementById('fullscreenFrameBtn');
+        const closeFrameBtn = document.getElementById('closeFrameBtn');
+
+        let currentTargetUrl = '';
+
+        settingsToggle.addEventListener('click', () => settingsModal.classList.add('open'));
+        closeSettings.addEventListener('click', () => settingsModal.classList.remove('open'));
+
+        function launchUtility() {
+            let query = urlInput.value.trim();
+            if (!query) return;
+
+            let targetUrl = query;
+            const isUrl = /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i.test(query);
+            
+            if (!isUrl) {
+                const engineBase = searchEngineSelect.value;
+                targetUrl = engineBase + encodeURIComponent(query);
+            } else if (!query.startsWith('http://') && !query.startsWith('https://')) {
+                targetUrl = 'https://' + query;
+            }
+
+            currentTargetUrl = targetUrl;
+
+            let sandboxAttr = downloadPassthrough.checked 
+                ? 'allow-scripts allow-same-origin allow-forms allow-popups allow-downloads' 
+                : 'allow-scripts allow-same-origin allow-forms allow-popups';
+            activeFrame.setAttribute('sandbox', sandboxAttr);
+
+            // Instant assignment without awaiting fetch response loops
+            let loadSource = bypassToggle.checked 
+                ? 'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl) 
+                : targetUrl;
+
+            if (aboutBlankToggle.checked) {
+                openAboutBlankWindow(loadSource, targetUrl, sandboxAttr);
+            } else {
+                activeFrame.src = loadSource;
+                viewerSection.style.display = 'flex';
+                siteInfoDisplay.innerHTML = `Loaded: <strong>${targetUrl}</strong>`;
+                viewerSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function openAboutBlankWindow(sourceUrl, displayUrl, sandboxAttr) {
+            let blankWindow = window.open('about:blank', '_blank');
+            if (!blankWindow || blankWindow.closed || typeof blankWindow.closed == 'undefined') {
+                alert('Popup blocked! Please allow popups for this site to use about:blank mode.');
+                return;
+            }
+
+            let doc = blankWindow.document;
+            doc.open();
+            doc.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>about:blank</title>
+                    <style>
+                        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; }
+                        iframe { width: 100%; height: 100%; border: none; }
+                    </style>
+                </head>
+                <body>
+                    <iframe src="${sourceUrl}" sandbox="${sandboxAttr}"></iframe>
+                </body>
+                </html>
+            `);
+            doc.close();
+            viewerSection.style.display = 'none';
+        }
+
+        goBtn.addEventListener('click', launchUtility);
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') launchUtility();
+        });
+
+        reloadFrameBtn.addEventListener('click', () => {
+            if (currentTargetUrl) {
+                launchUtility();
+            }
+        });
+
+        fullscreenFrameBtn.addEventListener('click', () => {
+            if (viewerSection.requestFullscreen) {
+                viewerSection.requestFullscreen();
+            } else if (viewerSection.webkitRequestFullscreen) {
+                viewerSection.webkitRequestFullscreen();
+            } else if (viewerSection.msRequestFullscreen) {
+                viewerSection.msRequestFullscreen();
+            }
+        });
+
+        closeFrameBtn.addEventListener('click', () => {
+            activeFrame.src = '';
+            viewerSection.style.display = 'none';
+            currentTargetUrl = '';
+            siteInfoDisplay.innerHTML = `Status: <strong>Idle</strong>`;
+        });
+    </script>
+</body>
+</html>
